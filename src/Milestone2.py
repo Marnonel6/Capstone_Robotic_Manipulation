@@ -48,75 +48,98 @@ Tse_initial = np.array([[ 0, 0, 1,  0 ],
                         [ 0, 0, 0,  1 ]])
 # Standoff before and after cube grab relative to cube
 # Add d2/2 to have cube in centre of gripper
-Tce_standoff = np.array([[ 1, 0, 0,  Cube_i[0]+d2/2.0],
-                         [ 0, 1, 0,         Cube_i[1]],
-                         [ 0, 0,-2,            0.3   ],
-                         [ 0, 0, 0,             1    ]])
+# Tse_standoff = np.array([[ 1, 0, 0,  Cube_i[0]+d2/2.0],
+#                          [ 0, 1, 0,         Cube_i[1]],
+#                          [ 0, 0,-2,            0.3   ],
+#                          [ 0, 0, 0,             1    ]])
+angle_grasp = 1.785398
+Tce_standoff = np.array([[ np.cos(angle_grasp), 0,  np.sin(angle_grasp),  d2/2.0 ],
+                         [          0,          1,            0,          0 ],
+                         [-np.sin(angle_grasp), 0,  np.cos(angle_grasp), 0.3],
+                         [          0,          0,             0,         1 ]])
 # End effector configuration relative to cube when grasp,
 # Add d2/2 to have cube in centre of gripper
-Tce_grasp = np.array([[ 0, 0, 1, Cube_i[0]+d2/2.0],
-                      [ 0, 1, 0,     Cube_i[1]   ],
-                      [-1, 0, 0,     Cube_i[2]   ],
-                      [ 0, 0, 0,           1     ]])
+# Tce_grasp = np.array([[ 0, 0, 1, Cube_i[0]+d2/2.0],
+#                       [ 0, 1, 0,     Cube_i[1]   ], 
+#                       [-1, 0, 0,     Cube_i[2]   ],
+#                       [ 0, 0, 0,           1     ]])
+# Tce_grasp = np.array([[ 0, 0, 1, 0],
+#                       [ 0, 1, 0, 0],
+#                       [-1, 0, 0, 0],
+#                       [ 0, 0, 0, 1]])
+Tce_grasp = np.array([[ np.cos(angle_grasp), 0,  np.sin(angle_grasp),  d2/2.0 ],
+                      [          0,          1,            0,          0 ],
+                      [-np.sin(angle_grasp), 0,  np.cos(angle_grasp),  0 ],
+                      [          0,          0,             0,         1 ]])
 
 
+def Traj_specs(Tf):
+    """Function to calculate N and create a trajectory_mat from the Tf (time)."""
+    N = int((Tf/dt)+1)
+    trajectory_mat = np.zeros((N,13))
+    return N, trajectory_mat
 
 
 def TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select):
+    """
+    Trajectory generator function
+    """
 
     if traj_select == 0:
         traj = mr.CartesianTrajectory(Xstart, Xend, Tf, N, method)
     else:
         traj = mr.ScrewTrajectory(Xstart, Xend, Tf, N, method)
-   
 
-
-    # print(f"\n first array = {traj[0][0,0]}")
-
+    # a = traj[-1]
+    # print(f"\n a = {traj[-1]}")
     for i in range(N):
-        print(f"traj{i} = {traj[i]}")
         m = 0
         for j in range(3):
             for k in range(3): #  r11, r12, r13 - r21, r22, r23, - r31, r32, r33
                 l = k+m
                 trajectory_mat[i,l] = traj[i][j,k]
             f = 9+j
-            # print(f"\n {j}")
             trajectory_mat[i,f] = traj[i][j,3] # px, py, pz
             m += 3 # Scale by one row
-    #           0    1     2    3    4    5    6    7    8   9  10   11    12
-    # # return r11, r12, r13, r21, r22, r23, r31, r32, r33, px, py, pz, gripper_state
     return trajectory_mat
 
 
 
-# Xstart = np.array([[ 0, 0, 1,  1+d2/2.0],
-#                    [ 0, 1, 0,  0 ],
-#                    [-1, 0, 0, 0.5],
-#                    [ 0, 0, 0,  1 ]])
-# Xend = np.array([[ 0, 0, 1,  1+d2/2.0],
-#                  [ 0, 1, 0,  0 ],
-#                  [-1, 0, 0, 0.025],
-#                  [ 0, 0, 0,  1 ]])
+# Use for all trajectorys
 dt = 0.01
-Tf = 3 # Amount of time for motion
-N = int((Tf/dt)+1)
 method = 5
-trajectory_mat = np.zeros((N,13))
 
-traj_select = 1
 
-# A = np.array([[ 1, 0, 0,  Cube_i[0]+d2/2.0],
-#               [ 0, 1, 0,         Cube_i[1]],
-#               [0, 0, -2,          0.3     ],
-#               [ 0, 0, 0,           1      ]])
+
+"""
+Traj 1
+"""
+Tf = 3 # Amount of time for motion
+N, trajectory_mat = Traj_specs(Tf)
 
 Xstart = Tse_initial
-Xend = Tce_standoff
+Xend = Tsc_initial@Tce_standoff
+traj_select = 1 # Select screw trajectory
 
 trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select)
-
 # Overwrite csv file
 np.savetxt("Milestone1.csv", trajectory_mat, delimiter = ",")
 
-print(f"\n {trajectory_mat[0]}")
+
+"""
+Traj 2
+"""
+Tf = 3 # Amount of time for motion
+N, trajectory_mat = Traj_specs(Tf)
+
+Xstart = Tsc_initial@Tce_standoff
+Xend = Tsc_initial@Tce_grasp
+traj_select = 0 # Cartesian trajectory
+
+# print(f"\n {Tsc_initial@Tce_standoff}")
+
+trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select)
+
+# Append to csv file
+with open("Milestone1.csv",'a') as csvfile:
+    np.savetxt(csvfile, trajectory_mat, delimiter = ",")
