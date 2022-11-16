@@ -1,1 +1,3 @@
 # Capstone_Robotic_Manipulation
+
+/home/marno/Classes/Fall22/Robotic_Manipulation/Robotic_Manip_Capstone/Capstone_Robotic_Manipulation/Milestone1.csv

@@ -64,7 +64,7 @@ def Traj_specs(Tf):
 
 def append_to_csv(trajectory_mat):
     """Appends trajectory_mat to an existing csv file."""
-    with open("Milestone1.csv",'a') as csvfile:
+    with open("Milestone2.csv",'a') as csvfile:
         np.savetxt(csvfile, trajectory_mat, delimiter = ",")
 
 
@@ -105,7 +105,7 @@ traj_select = traj_select_vec[0] # Select screw trajectory
 trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select,grasp)
 
 # Create csv file
-np.savetxt("Milestone1.csv", trajectory_mat, delimiter = ",")
+np.savetxt("Milestone2.csv", trajectory_mat, delimiter = ",")
 
 
 """
