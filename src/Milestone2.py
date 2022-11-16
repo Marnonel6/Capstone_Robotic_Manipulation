@@ -14,6 +14,9 @@ d3 = 4.3/100.0 # Lenght from gripper frame to back of grippers
 dt = 0.01
 method = 5
 k = 1
+Tf_vec = np.array([2,1,1,1,3,1,1,1]) # Time for all trajectories
+gripper_vec = np.array([0, 0, 1, 1, 1, 1, 0, 0]) # Gripper state for each trajectory
+traj_select_vec = np.array([1, 0, 0, 0, 1, 0, 0, 0]) # Select Cartesian or ScrewTrajectory
 
 # Cibe start location
 Cube_i = np.array([1,0,0.025])
@@ -91,13 +94,13 @@ def TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select
 """
 Traj 1 - Initial to standoff initial
 """
-Tf = 3 # Amount of time for motion
+Tf = 5 # Amount of time for motion
 N, trajectory_mat = Traj_specs(Tf)
-grasp = 0 # Open gripper
+grasp = gripper_vec[0] # Open gripper
 
 Xstart = Tse_initial
 Xend = Tsc_initial@Tce_standoff
-traj_select = 1 # Select screw trajectory
+traj_select = traj_select_vec[0] # Select screw trajectory
 
 trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select,grasp)
 
@@ -108,15 +111,13 @@ np.savetxt("Milestone1.csv", trajectory_mat, delimiter = ",")
 """
 Traj 2 - standoff initial to grasp initial
 """
-Tf = 3 # Amount of time for motion
+Tf = Tf_vec[1] # Amount of time for motion
 N, trajectory_mat = Traj_specs(Tf)
-grasp = 0 # Open gripper
+grasp = gripper_vec[1] # Open gripper
 
 Xstart = Tsc_initial@Tce_standoff
 Xend = Tsc_initial@Tce_grasp
-traj_select = 0 # Cartesian trajectory
-
-# print(f"\n {Tsc_initial@Tce_standoff}")
+traj_select = traj_select_vec[1] # Cartesian trajectory
 
 trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
 
@@ -127,15 +128,13 @@ append_to_csv(trajectory_mat)
 """
 Traj 3 - Grasp initial
 """
-Tf = 1 # Wai for 1sec to grab block
+Tf = Tf_vec[2] # Wai for 1sec to grab block
 N, trajectory_mat = Traj_specs(Tf)
-grasp = 1 # Close gripper
+grasp = gripper_vec[2] # Close gripper
 
 Xstart = Tsc_initial@Tce_grasp
 Xend = Tsc_initial@Tce_grasp
-traj_select = 0 # Cartesian trajectory
-
-# print(f"\n {Tsc_initial@Tce_standoff}")
+traj_select = traj_select_vec[2] # Cartesian trajectory
 
 trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
 
@@ -146,15 +145,13 @@ append_to_csv(trajectory_mat)
 """
 Traj 4 - Grasp initial to standoff initial
 """
-Tf = 3 # Amount of time for motion
+Tf = Tf_vec[3] # Amount of time for motion
 N, trajectory_mat = Traj_specs(Tf)
-grasp = 1 # Close gripper
+grasp = gripper_vec[3] # Close gripper
 
 Xstart = Tsc_initial@Tce_grasp
 Xend = Tsc_initial@Tce_standoff
-traj_select = 0 # Cartesian trajectory
-
-# print(f"\n {Tsc_initial@Tce_standoff}")
+traj_select = traj_select_vec[3] # Cartesian trajectory
 
 trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
 
@@ -165,15 +162,13 @@ append_to_csv(trajectory_mat)
 """
 Traj 5 - Standoff initial to standoff goal
 """
-Tf = 5 # Amount of time for motion
+Tf = Tf_vec[4] # Amount of time for motion
 N, trajectory_mat = Traj_specs(Tf)
-grasp = 1 # Close gripper
+grasp = gripper_vec[4] # Close gripper
 
 Xstart = Tsc_initial@Tce_standoff
 Xend = Tsc_goal@Tce_standoff
-traj_select = 1 # Screw trajectory
-
-# print(f"\n {Tsc_initial@Tce_standoff}")
+traj_select = traj_select_vec[4] # Screw trajectory
 
 trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
 
@@ -184,15 +179,13 @@ append_to_csv(trajectory_mat)
 """
 Traj 6 - Standoff goal to grasp goal
 """
-Tf = 3 # Amount of time for motion
+Tf = Tf_vec[5] # Amount of time for motion
 N, trajectory_mat = Traj_specs(Tf)
-grasp = 1 # Close gripper
+grasp = gripper_vec[5] # Close gripper
 
 Xstart = Tsc_goal@Tce_standoff
 Xend = Tsc_goal@Tce_grasp
-traj_select = 0 # Cartesian trajectory
-
-# print(f"\n {Tsc_initial@Tce_standoff}")
+traj_select = traj_select_vec[5] # Cartesian trajectory
 
 trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
 
@@ -204,15 +197,13 @@ append_to_csv(trajectory_mat)
 """
 Traj 7 - Grasp goal - Release block
 """
-Tf = 1 # Amount of time for motion
+Tf = Tf_vec[6] # Amount of time for motion
 N, trajectory_mat = Traj_specs(Tf)
-grasp = 0 # Close gripper
+grasp = gripper_vec[6] # Close gripper
 
 Xstart = Tsc_goal@Tce_grasp
 Xend = Tsc_goal@Tce_grasp
-traj_select = 0 # Cartesian trajectory
-
-# print(f"\n {Tsc_initial@Tce_standoff}")
+traj_select = traj_select_vec[6] # Cartesian trajectory
 
 trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
 
@@ -223,15 +214,13 @@ append_to_csv(trajectory_mat)
 """
 Traj 8 - Grasp goal to Standoff goal
 """
-Tf = 3 # Amount of time for motion
+Tf = Tf_vec[7] # Amount of time for motion
 N, trajectory_mat = Traj_specs(Tf)
-grasp = 0 # Close gripper
+grasp = gripper_vec[7] # Close gripper
 
 Xstart = Tsc_goal@Tce_grasp
 Xend = Tsc_goal@Tce_standoff
-traj_select = 0 # Cartesian trajectory
-
-# print(f"\n {Tsc_initial@Tce_standoff}")
+traj_select = traj_select_vec[7] # Cartesian trajectory
 
 trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
 
