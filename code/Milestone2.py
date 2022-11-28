@@ -19,7 +19,7 @@ Tf_vec = np.array([2,1,1,1,3,1,1,1]) # Time for all trajectories
 gripper_vec = np.array([0, 0, 1, 1, 1, 1, 0, 0]) # Gripper state for each trajectory
 traj_select_vec = np.array([1, 0, 0, 0, 1, 0, 0, 0]) # Select Cartesian or ScrewTrajectory
 
-# Cibe start location
+# Cube start location
 Cube_i = np.array([1,0,0.025])
 # Cube goal desired location
 Cube_g = np.array([0,-1,0.025])
