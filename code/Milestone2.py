@@ -1,9 +1,10 @@
+"""
+Cut and paste this command in the command line to generate the csv file: 
+(You must be in the same directory as the python file.)
+    +  python3 -m Milestone2.py
+"""
 import modern_robotics as mr
 import numpy as np
-
-
-# k - 1 or greater - k = 10 then controller at 10000Hz. Easiest is to choose k = 1
-# N = 30*k/0.01
 
 # Gripper geometry
 d1 = 7.0/100.0 # Space between open grippers
