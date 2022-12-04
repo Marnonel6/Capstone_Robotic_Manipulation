@@ -89,12 +89,7 @@ def NextState(CurrentState, ControlVelocities, dt, VelocityLimit):
 
     return next_state
 
-# # Old and New joint angle array
-# old_joint_angles = np.array([0,0,0,0,0])
-# new_joint_angles = np.array([0,0,0,0,0])
-# # Old and New wheel angle array
-# old_wheel_angles = np.array([0,0,0,0])
-# new_wheel_angles = np.array([0,0,0,0])
+
 
 # Joint and wheel velocity array
 joint_velocity = np.array([0,0,0,0,0])
@@ -124,44 +119,11 @@ Fo = (r/4)*np.array([[-1.0/(l+w), 1.0/(l+w), 1.0/(l+w), -1.0/(l+w)],
 # Use for all trajectorys
 dt = 0.01
 
-# # Cube start location
-# Cube_i = np.array([1,0,0.025])
-# # Cube goal desired location
-# Cube_g = np.array([0,-1,0.025])
-
-# # Chassis frame {b} relative to world frame {s}
-# # Tsb = np.array([[np.cos(), 0, 0,   1  ],
-# #                 [0, 1, 0,   0  ],
-# #                 [0, 0, 1, 0.025],
-# #                 [0, 0, 0,   1  ]])
-# # Fixed offset from chassis frame {b} to base of arm frame {0}
-# Tb0 = np.array([[1, 0, 0, 0.1662],
-#                 [0, 1, 0,    0  ],
-#                 [0, 0, 1, 0.0026],
-#                 [0, 0, 0,    1  ]])
-# # Home configuration. End effector frame {e} relative to the arm base frame {0}
-# M0e = np.array([[1, 0, 0,  0.033],
-#                 [0, 1, 0,    0  ],
-#                 [0, 0, 1, 0.6546],
-#                 [0, 0, 0,    1  ]])
-# # Arm at home configuration, the screw axes in {b} frame for the five joints are expressed
-# # in the end-effector frame {e} as
-# J_b = np.array([[  0  ,    0,     0,       0,   0],
-#                 [  0  ,   -1,    -1,      -1,   0],
-#                 [  1  ,    0,     0,       0,   1],
-#                 [  0  ,-0.5076,-0.3526,-0.2176, 0],
-#                 [0.033,    0,     0,       0,   0],
-#                 [  0,      0,     0,       0,   0]])
-
 # Create csv file
 # np.savetxt("Milestone1.csv", Start_state, delimiter = ",")
 
 for i in range(100):
     CurrentState = NextState(CurrentState, ControlVelocities, dt, VelocityLimit)
-    # print(f"CurrentState = {CurrentState}")
-    # Append to csv file
-    # for i in range(12):
-    #     PrevState[i] = CurrentState[i]
     All_states = np.vstack((All_states,CurrentState))
 
 append_to_csv(All_states)
