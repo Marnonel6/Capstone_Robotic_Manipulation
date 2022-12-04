@@ -60,12 +60,10 @@ Xp = np.array([[ 0.170, 0, 0.985, 0.387],
               [   0  , 1,   0  ,   0  ],
               [-0.985, 0, 0.170, 0.570],
               [   0  , 0,   0  ,   1  ]])
-Kp = 0
-Ki = 0
-dt = 0.01
 
 # TODO get from other code
 curr_config = np.array([0, 0, 0, 0, 0, 0.2, -1.6, 0])
+# TODO Should come from miletone 1
 
 """ End of Test values """
 
@@ -76,11 +74,12 @@ curr_config = np.array([0, 0, 0, 0, 0, 0.2, -1.6, 0])
 
 
 
+# PID Gains
+Kp = 0
+Ki = 0
 
-
-
-
-
+# Time step
+dt = 0.01
 
 # Robot dimensions
 l = float(0.47/2) # Wheel to centre of body in length
