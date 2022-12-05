@@ -465,6 +465,9 @@ curr_config = np.array([0, 0, 0.5, 0, -0.2, -0.6, -1.578, 0])
 # PID Gains
 # Kp = 5 # 1
 # Ki = 1  # 0 
+# Kp = 1
+# Ki = 0.001
+""" Best but has some error when drop cube """
 Kp = 1
 Ki = 0.01
 
@@ -708,6 +711,7 @@ for t in range(0, Desired_trajectory.shape[0]-1):
     # arm2 = np.array([-0.1, -1.8])
     # arm3 = np.array([-0.1, -2.1])
     # arm4 = np.array([-0.1, -1.7])
+    # arm1 = np.array([-0.8, 0.8])
     arm1 = np.array([-0.8, 0.8])
     arm2 = np.array([-0.1, -1.8])
     arm3 = np.array([-0.5, -2.5])#-1.89
