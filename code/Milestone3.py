@@ -196,6 +196,17 @@ def Milestone2():
                         [-1, 0, 0,  -1  ],
                         [ 0, 0, 1, 0.025],
                         [ 0, 0, 0,   1  ]])
+    """ New configuration """
+    # # Cube initial configuration
+    # Tsc_initial = np.array([[1, 0, 0,   1  ],
+    #                         [0, 1, 0,   1  ],
+    #                         [0, 0, 1, 0.025],
+    #                         [0, 0, 0,   1  ]])
+    # # Cube final configuration
+    # Tsc_goal = np.array([[ 0, 1, 0,   0  ],
+    #                     [-1, 0, 0,  -1.0  ],
+    #                     [ 0, 0, 1, 0.025],
+    #                     [ 0, 0, 0,   1  ]])
     # Gripper initial, End effector initial configuration
     # Tse_initial = np.array([[ 0, 0, 1,  0 ],
     #                         [ 0, 1, 0,  0 ],
