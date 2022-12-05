@@ -163,6 +163,7 @@ def Milestone2(X):
 
     # Total desired trajectory
     Desired_trajectory = np.array([])
+    Desired_grasp = np.array([])
 
     # Gripper geometry
     d1 = 7.0/100.0 # Space between open grippers
@@ -193,11 +194,14 @@ def Milestone2(X):
                         [ 0, 0, 1, 0.025],
                         [ 0, 0, 0,   1  ]])
     # Gripper initial, End effector initial configuration
-    Tse_initial = np.array([[ 0, 0, 1,  0 ],
-                            [ 0, 1, 0,  0 ],
-                            [-1, 0, 0, 0.5],
-                            [ 0, 0, 0,  1 ]])
+    # Tse_initial = np.array([[ 0, 0, 1,  0 ],
+    #                         [ 0, 1, 0,  0 ],
+    #                         [-1, 0, 0, 0.5],
+    #                         [ 0, 0, 0,  1 ]])
+
+    """ NB !!!!!!!!!!!!!!!!!!!!!!!!!"""
     Tse_initial = X
+    """ NB !!!!!!!!!!!!!!!!!!!!!!!!!"""
 
     angle_grasp = 1.785398 # Angle for end effector
 
@@ -222,11 +226,6 @@ def Milestone2(X):
         trajectory_mat = np.zeros((N,13))
         return N, trajectory_mat
 
-    def append_to_csv(trajectory_mat):
-        """Appends trajectory_mat to an existing csv file."""
-        with open("Milestone2.csv",'a') as csvfile:
-            np.savetxt(csvfile, trajectory_mat, delimiter = ",")
-
 
     def TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp):
         """
@@ -237,18 +236,21 @@ def Milestone2(X):
         else:
             traj = mr.ScrewTrajectory(Xstart, Xend, Tf, N, method)
 
-        for i in range(N):
-            m = 0
-            for j in range(3):
-                for k in range(3): # extract r11, r12, r13 - r21, r22, r23, - r31, r32, r33
-                    l = k+m
-                    trajectory_mat[i,l] = traj[i][j,k]
-                f = 9+j
-                trajectory_mat[i,f] = traj[i][j,3] # extract px, py, pz
-                m += 3 # Scale by one row [3 elements]
-            trajectory_mat[i,12] = grasp # Set Gripper
-
-        return trajectory_mat
+        # for i in range(N):
+        #     m = 0
+        #     for j in range(3):
+        #         for k in range(3): # extract r11, r12, r13 - r21, r22, r23, - r31, r32, r33
+        #             l = k+m
+        #             trajectory_mat[i,l] = traj[i][j,k]
+        #         f = 9+j
+        #         trajectory_mat[i,f] = traj[i][j,3] # extract px, py, pz
+        #         m += 3 # Scale by one row [3 elements]
+        #     trajectory_mat[i,12] = grasp # Set Gripper
+        # if grasp == 0:
+        #     grasp = np.zeros((0,len(traj)))
+        # else:
+        #     grasp = np.ones((0,len(traj)))
+        return traj
 
 
     """
@@ -262,11 +264,9 @@ def Milestone2(X):
     Xend = Tsc_initial@Tce_standoff
     traj_select = traj_select_vec[0] # Select screw trajectory
 
-    trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select,grasp)
-    Desired_trajectory = trajectory_mat
-
-    # Create csv file
-    np.savetxt("Milestone2.csv", trajectory_mat, delimiter = ",")
+    tra = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select,grasp)
+    Desired_trajectory = tra
+    # Desired_grasp = gra
 
 
     """
@@ -280,11 +280,10 @@ def Milestone2(X):
     Xend = Tsc_initial@Tce_grasp
     traj_select = traj_select_vec[1] # Cartesian trajectory
 
-    trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
-    Desired_trajectory = np.vstack((Desired_trajectory, trajectory_mat))
+    tra = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
+    Desired_trajectory = np.vstack((Desired_trajectory, tra))
+    # Desired_grasp =  np.vstack((Desired_grasp, gra))
 
-    # Append to csv file
-    append_to_csv(trajectory_mat)
 
 
     """
@@ -298,11 +297,9 @@ def Milestone2(X):
     Xend = Tsc_initial@Tce_grasp
     traj_select = traj_select_vec[2] # Cartesian trajectory
 
-    trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
-    Desired_trajectory = np.vstack((Desired_trajectory, trajectory_mat))
-
-    # Append to csv file
-    append_to_csv(trajectory_mat)
+    tra = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
+    Desired_trajectory = np.vstack((Desired_trajectory, tra))
+    # Desired_grasp =  np.vstack((Desired_grasp, gra))
 
 
     """
@@ -316,11 +313,9 @@ def Milestone2(X):
     Xend = Tsc_initial@Tce_standoff
     traj_select = traj_select_vec[3] # Cartesian trajectory
 
-    trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
-    Desired_trajectory = np.vstack((Desired_trajectory, trajectory_mat))
-
-    # Append to csv file
-    append_to_csv(trajectory_mat)
+    tra = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
+    Desired_trajectory = np.vstack((Desired_trajectory, tra))
+    # Desired_grasp =  np.vstack((Desired_grasp, gra))
 
 
     """
@@ -334,11 +329,9 @@ def Milestone2(X):
     Xend = Tsc_goal@Tce_standoff
     traj_select = traj_select_vec[4] # Screw trajectory
 
-    trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
-    Desired_trajectory = np.vstack((Desired_trajectory, trajectory_mat))
-
-    # Append to csv file
-    append_to_csv(trajectory_mat)
+    tra = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
+    Desired_trajectory = np.vstack((Desired_trajectory, tra))
+    # Desired_grasp =  np.vstack((Desired_grasp, gra))
 
 
     """
@@ -352,11 +345,9 @@ def Milestone2(X):
     Xend = Tsc_goal@Tce_grasp
     traj_select = traj_select_vec[5] # Cartesian trajectory
 
-    trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
-    Desired_trajectory = np.vstack((Desired_trajectory, trajectory_mat))
-
-    # Append to csv file
-    append_to_csv(trajectory_mat)
+    tra  = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
+    Desired_trajectory = np.vstack((Desired_trajectory, tra))
+    # Desired_grasp =  np.vstack((Desired_grasp, gra))
 
 
 
@@ -371,11 +362,9 @@ def Milestone2(X):
     Xend = Tsc_goal@Tce_grasp
     traj_select = traj_select_vec[6] # Cartesian trajectory
 
-    trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
-    Desired_trajectory = np.vstack((Desired_trajectory, trajectory_mat))
-
-    # Append to csv file
-    append_to_csv(trajectory_mat)
+    tra = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
+    Desired_trajectory = np.vstack((Desired_trajectory, tra))
+    # Desired_grasp =  np.vstack((Desired_grasp, gra))
 
 
     """
@@ -389,13 +378,11 @@ def Milestone2(X):
     Xend = Tsc_goal@Tce_standoff
     traj_select = traj_select_vec[7] # Cartesian trajectory
 
-    trajectory_mat = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
-    Desired_trajectory = np.vstack((Desired_trajectory, trajectory_mat))
+    tra = TrajectoryGenerator(Xstart, Xend, Tf, N, method, trajectory_mat, traj_select, grasp)
+    Desired_trajectory = np.vstack((Desired_trajectory, tra))
+    # Desired_grasp =  np.vstack((Desired_grasp, gra))
 
-    # Append to csv file
-    append_to_csv(trajectory_mat)
-
-    return Desired_trajectory
+    return Desired_trajectory #, Desired_grasp
 
 
 
@@ -410,7 +397,7 @@ def append_to_csv(CurrentState):
 
 
 
-def FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr_Total, Xerr):
+def FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt): #, Xerr_Total, Xerr):
 
     Kp = Kp*np.identity(6)
     Ki = Ki*np.identity(6)
@@ -422,7 +409,7 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr_Total, Xerr):
     # PID with feedforward control
     # Total integral error
     # Xerr_Total += Xerr
-    Ve = mr.Adjoint(mr.TransInv(X) @ Xd) @ Vd + Kp@Xerr + Ki@Xerr_Total
+    Ve = mr.Adjoint(mr.TransInv(X) @ Xd) @ Vd #+ Kp@Xerr + Ki@Xerr_Total
 
 
 
@@ -432,37 +419,16 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr_Total, Xerr):
     # print(f"Vd = {Vd}")
     # print(f"Ve = {Ve}")
 
-    return Ve, Xerr, Xerr_Total
+    return Ve#, Xerr, Xerr_Total
 
 
-
-""" Test values """
-# Xd = np.array([[ 0, 0, 1, 0.5],
-#                [ 0, 1, 0,  0 ],
-#                [-1, 0, 0, 0.5],
-#                [ 0, 0, 0,  1 ]])
-# Xd_next = np.array([[ 0, 0, 1, 0.6],
-#                     [ 0, 1, 0,  0 ],
-#                     [-1, 0, 0, 0.3],
-#                     [ 0, 0, 0,  1 ]])
-# Xp = np.array([[ 0.170, 0, 0.985, 0.387],
-#               [   0  , 1,   0  ,   0  ],
-#               [-0.985, 0, 0.170, 0.570],
-#               [   0  , 0,   0  ,   1  ]])
-
-# # TODO get from other code
-# curr_config = np.array([0, 0, 0, 0, 0, 0.2, -1.6, 0])
-# # TODO Should come from miletone 1
-
-""" End of Test values """
-
-
-# TODO change
-curr_config = np.array([0, 0, 0, 0, 0, 0, 0, 0])
 
 # PID Gains
-Kp =15
-Ki = 3
+Kp = 0
+Ki = 0
+
+# Robot start position and joint angles
+curr_config = np.array([0, 0, 0, 0, 0, 0, 0, 0])
 
 # Time step
 dt = 0.01
@@ -478,8 +444,6 @@ F6 = (r/4)*np.array([[0, 0, 0, 0],
                     [    1.0    ,     1.0  ,     1.0  ,     1.0   ],
                     [   -1.0    ,     1.0  ,    -1.0  ,     1.0   ],
                     [0, 0, 0, 0]])
-
-
 # Fixed offset from chassis frame {b} to base of arm frame {0}
 Tb0 = np.array([[1, 0, 0, 0.1662],
                 [0, 1, 0,    0  ],
@@ -516,84 +480,47 @@ Tsb = np.array([[np.cos(phi), -np.sin(phi), 0, x],
                 [    0      ,       0     , 1, z],
                 [    0      ,       0     , 0, 1]])
 
+
 # Tse - Current configuration of robot end-effector {e} relative to world frame {s}
 X = Tsb @ Tb0 @ T0e
-# print(f"X = {X}")
-
+X  = mr.FKinBody(X,Blist,joint_angles)
 
 # Jacobian of arm
 J_arm = mr.JacobianBody(Blist, joint_angles)
-# print(f"J_arm = {J_arm}")
 J_base = mr.Adjoint(np.linalg.pinv(T0e) @ np.linalg.pinv(Tb0)) @ F6
-# print(f"\nJ_base = {J_base}")
 Je = np.hstack((J_base, J_arm))
-# print(f"Je = {Je}")
 
-
-""" Milestone2 Reference Trajectory. """
-# Creat desired trajectory
-Desired_trajectory = Milestone2(X) # Send Tse
-# Desired_trajectory = Milestone2()
-# print(f"Desired_trajectory = {Desired_trajectory}")
-# print(f"Shape Desired_trajectory = {Desired_trajectory.shape}")
-
-def TransMat(R):
-    return np.array([[R[0], R[1], R[2], R[9]],
-                     [R[3], R[4], R[5], R[10]],
-                     [R[6], R[7], R[8], R[11]],
-                     [ 0  ,  0  ,   0 ,   1  ]])
-
-# Max velocity
-VelocityLimit = 100
-
-# Gripper initial, End effector initial configuration
-Tse_initial = np.array([[ 0, 0, 1,  0 ],
-                        [ 0, 1, 0,  0 ],
-                        [-1, 0, 0, 0.5],
-                        [ 0, 0, 0,  1 ]])
-# print(f"X = {X}")
-# X = Tse_initial
-Start_state = np.array([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]) # TODO delete/
-# Start_state = np.array([0.6, -0.2, -0.2, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
+Start_state = np.array([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
 CurrentState = Start_state
 Xtotal = Start_state
 
-Xerr_Total = np.zeros((6))
-Xerr = np.zeros((6))
+Desired_trajectory = Milestone2(X)
+
+VelocityLimit = 20
 
 for t in range(0, Desired_trajectory.shape[0]-1):
-    # Milestone2 - Calculate desired trajectory and next desired trajectory
-    Xd = TransMat(Desired_trajectory[t])
-    Xd_next = TransMat(Desired_trajectory[t+1])
 
-    # Milestone 3 - PID controller 
-    Ve, Xerr, Xerr_Total= FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr, Xerr_Total)
-    Xerr_Total += Xerr*dt
+    Xd = Desired_trajectory[t]
+    Xd_next = Desired_trajectory[t+1]
 
-
+    Ve = FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt)
 
     # Command velocities
-    u_theta_Dot = np.linalg.pinv(Je)@Ve
-    # print(f"\nu_theta_Dot = {u_theta_Dot}")
-    ControlVelocities = u_theta_Dot
+    ControlVelocities = np.linalg.pinv(Je)@Ve
 
-    # Milestone 1 - Get next state
-    Next_X = NextState(CurrentState, ControlVelocities, dt, VelocityLimit)
-    # print(f"Next_X = {Next_X}")
-    # Calculate new current state
-    curr_config = Next_X[:12]
-    # print(f"curr_config = {curr_config}")
-    # Extraxt joint angles
-    joint_angles = curr_config[3:8]
+    CurrentState = NextState(CurrentState, ControlVelocities, dt, VelocityLimit)
 
-    # print(f"joint_angles = {joint_angles}")
+    # curr_config = CurrentState[:12]
+    joint_angles = CurrentState[3:8]
+
     # Calculate transformation matrix of end-effector {e} relative to the base of the arm {0}
     T0e = mr.FKinBody(M0e,Blist,joint_angles)
+    # print(f"\nTe = {T0e}")
 
     # Extraxt robot base angle and x,yz coordinates
-    phi = curr_config[0]
-    x = curr_config[1]
-    y = curr_config[2]
+    phi = CurrentState[0]
+    x = CurrentState[1]
+    y = CurrentState[2]
     z = 0.0963
     # Chassis frame {b} relative to world frame {s}
     Tsb = np.array([[np.cos(phi), -np.sin(phi), 0, x],
@@ -604,134 +531,20 @@ for t in range(0, Desired_trajectory.shape[0]-1):
 
     # Tse - Current configuration of robot end-effector {e} relative to world frame {s}
     X = Tsb @ Tb0 @ T0e
-    # X = mr.FKinBody(X,Blist,joint_angles)
-    CurrentState = Next_X
-    # print(f"Next_X = {Next_X}")
-    stack = Next_X
-    stack[-1] = Desired_trajectory[t][-1]
-    Xtotal = np.vstack((Xtotal, stack))
-
+    X  = mr.FKinBody(X,Blist,joint_angles)
 
     # Jacobian of arm
     J_arm = mr.JacobianBody(Blist, joint_angles)
-    # print(f"J_arm = {J_arm}")
     J_base = mr.Adjoint(np.linalg.pinv(T0e) @ np.linalg.pinv(Tb0)) @ F6
-    # print(f"\nJ_base = {J_base}")
     Je = np.hstack((J_base, J_arm))
-    # print(f"Je = {Je}")
 
 
-
-""" WITH COLLISION DETECTION - Gets stuck though """
-
-# for t in range(0, Desired_trajectory.shape[0]-1):
-#     # Milestone2 - Calculate desired trajectory and next desired trajectory
-#     Xd = TransMat(Desired_trajectory[t])
-#     Xd_next = TransMat(Desired_trajectory[t+1])
-
-#     # Milestone 3 - PID controller 
-#     Ve, Xerr, Xerr_Total= FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr, Xerr_Total)
-#     Xerr_Total += Xerr*dt
-
-#     arm1 = np.array([-1.2, 1.2])
-#     arm2 = np.array([-1.116,0.3])
-#     arm3 = np.array([-1.9, 0.5])
-#     arm4 = np.array([-1.7, 0.1])
-#     print(f"joint_angles = {joint_angles}")
-#     collision = True
-#     while collision == True:
-#         collision = False
-#         # Command velocities
-#         u_theta_Dot = np.linalg.pinv(Je)@Ve
-#         # print(f"\nu_theta_Dot = {u_theta_Dot}")
-#         ControlVelocities = u_theta_Dot
-
-#         # Milestone 1 - Get next state
-#         Next_X = NextState(CurrentState, ControlVelocities, dt, VelocityLimit)
-#         # print(f"Next_X = {Next_X}")
-#         # Calculate new current state
-#         curr_config = Next_X[:12]
-#         # print(f"curr_config = {curr_config}")
-#         # Extraxt joint angles
-#         joint_angles = curr_config[3:8]
-
-#         # print(f"joint_angles = {joint_angles}")
-#         # print(f"Je = {Je[:,4:]}")
-
-#         if joint_angles[0] < arm1[0] or joint_angles[0] > arm1[1]:
-#             # print(f"1")
-#             collision = True
-#             for j in range(5):
-#                 Je[j,4] = 0
-#         if joint_angles[1] < arm2[0] or joint_angles[1] > arm2[1]:
-#             # print(f"2")
-#             collision = True
-#             for j in range(5):
-#                 Je[j,5] = 0
-#         if joint_angles[2] < arm3[0] or joint_angles[2] > arm3[1]:
-#             # print(f"3")
-#             collision = True
-#             for j in range(5):
-#                 Je[j,6] = 0
-#         if joint_angles[3] < arm4[0] or joint_angles[3] > arm4[1]:
-#             # print(f"4")
-#             collision = True
-#             for j in range(5):
-#                 Je[j,7] = 0
-
-#     print(" No collision ")
-#         # def testJointLimits(joint):
-#         #     if joint[0] > arm1[1]:
-#         #         joint
-        
-
-#         #     return 
-
-
-#     # """ Test Joint Limits """
-#     # testJointLimits(joint_angles)
-
-
-#     # print(f"joint_angles = {joint_angles}")
-#     # Calculate transformation matrix of end-effector {e} relative to the base of the arm {0}
-#     T0e = mr.FKinBody(M0e,Blist,joint_angles)
-
-#     # Extraxt robot base angle and x,yz coordinates
-#     phi = curr_config[0]
-#     x = curr_config[1]
-#     y = curr_config[2]
-#     z = 0.0963
-#     # Chassis frame {b} relative to world frame {s}
-#     Tsb = np.array([[np.cos(phi), -np.sin(phi), 0, x],
-#                     [np.sin(phi),  np.cos(phi), 0, y],
-#                     [    0      ,       0     , 1, z],
-#                     [    0      ,       0     , 0, 1]])
-
-
-#     # Tse - Current configuration of robot end-effector {e} relative to world frame {s}
-#     X = Tsb @ Tb0 @ T0e
-#     CurrentState = Next_X
-#     # print(f"Next_X = {Next_X}")
-#     stack = Next_X
-#     stack[-1] = Desired_trajectory[t][-1]
-#     Xtotal = np.vstack((Xtotal, stack))
-
-
-#     # Jacobian of arm
-#     J_arm = mr.JacobianBody(Blist, joint_angles)
-#     # print(f"J_arm = {J_arm}")
-#     J_base = mr.Adjoint(np.linalg.pinv(T0e) @ np.linalg.pinv(Tb0)) @ F6
-#     # print(f"\nJ_base = {J_base}")
-#     Je = np.hstack((J_base, J_arm))
-#     # print(f"Je = {Je}")
+    stack = CurrentState
+    stack[-1] = 0
+    Xtotal = np.vstack((Xtotal, stack))
 
 
 # Create csv file
 np.savetxt("Capstone.csv", Xtotal, delimiter = ",")
-
-    # print(f"Xd = {Xd}")
-    # print(f"[u_theta_Dot] = {u_theta_Dot}")
-
-
 
 
