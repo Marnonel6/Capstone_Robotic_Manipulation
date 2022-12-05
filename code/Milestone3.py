@@ -152,7 +152,8 @@ Fo = (r/4)*np.array([[-1.0/(l+w), 1.0/(l+w), 1.0/(l+w), -1.0/(l+w)],
                                             MILESTONE 2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-def Milestone2(X):
+# def Milestone2(X):
+def Milestone2():
     """
     Cut and paste this command in the command line to generate the csv file: 
     (You must be in the same directory as the python file.)
@@ -197,7 +198,7 @@ def Milestone2(X):
                             [ 0, 1, 0,  0 ],
                             [-1, 0, 0, 0.5],
                             [ 0, 0, 0,  1 ]])
-    Tse_initial = X
+    # Tse_initial = X
 
     angle_grasp = 1.785398 # Angle for end effector
 
@@ -461,8 +462,8 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr_Total, Xerr):
 curr_config = np.array([0, 0, 0, 0, 0, 0, 0, 0])
 
 # PID Gains
-Kp =15
-Ki = 3
+Kp = 10 # 1
+Ki = 0  # 0 
 
 # Time step
 dt = 0.01
@@ -518,6 +519,7 @@ Tsb = np.array([[np.cos(phi), -np.sin(phi), 0, x],
 
 # Tse - Current configuration of robot end-effector {e} relative to world frame {s}
 X = Tsb @ Tb0 @ T0e
+# X = mr.FKinBody(X,Blist,joint_angles)
 # print(f"X = {X}")
 
 
@@ -532,8 +534,8 @@ Je = np.hstack((J_base, J_arm))
 
 """ Milestone2 Reference Trajectory. """
 # Creat desired trajectory
-Desired_trajectory = Milestone2(X) # Send Tse
-# Desired_trajectory = Milestone2()
+# Desired_trajectory = Milestone2(X) # Send Tse
+Desired_trajectory = Milestone2()
 # print(f"Desired_trajectory = {Desired_trajectory}")
 # print(f"Shape Desired_trajectory = {Desired_trajectory.shape}")
 
@@ -553,8 +555,9 @@ Tse_initial = np.array([[ 0, 0, 1,  0 ],
                         [ 0, 0, 0,  1 ]])
 # print(f"X = {X}")
 # X = Tse_initial
-Start_state = np.array([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]) # TODO delete/
-# Start_state = np.array([0.6, -0.2, -0.2, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
+# Start_state = np.array([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]) # TODO delete/
+Start_state = np.array([0.6, -0.2, -0.2, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
+Start_state = np.array([0.6, -0.2, -0.2, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
 CurrentState = Start_state
 Xtotal = Start_state
 
@@ -566,22 +569,10 @@ for t in range(0, Desired_trajectory.shape[0]-1):
     Xd = TransMat(Desired_trajectory[t])
     Xd_next = TransMat(Desired_trajectory[t+1])
 
-    # Milestone 3 - PID controller 
-    Ve, Xerr, Xerr_Total= FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr, Xerr_Total)
-    Xerr_Total += Xerr*dt
 
-
-
-    # Command velocities
-    u_theta_Dot = np.linalg.pinv(Je)@Ve
-    # print(f"\nu_theta_Dot = {u_theta_Dot}")
-    ControlVelocities = u_theta_Dot
-
-    # Milestone 1 - Get next state
-    Next_X = NextState(CurrentState, ControlVelocities, dt, VelocityLimit)
     # print(f"Next_X = {Next_X}")
     # Calculate new current state
-    curr_config = Next_X[:12]
+    curr_config = CurrentState[:12]
     # print(f"curr_config = {curr_config}")
     # Extraxt joint angles
     joint_angles = curr_config[3:8]
@@ -605,11 +596,8 @@ for t in range(0, Desired_trajectory.shape[0]-1):
     # Tse - Current configuration of robot end-effector {e} relative to world frame {s}
     X = Tsb @ Tb0 @ T0e
     # X = mr.FKinBody(X,Blist,joint_angles)
-    CurrentState = Next_X
-    # print(f"Next_X = {Next_X}")
-    stack = Next_X
-    stack[-1] = Desired_trajectory[t][-1]
-    Xtotal = np.vstack((Xtotal, stack))
+    # CurrentState = Next_X
+
 
 
     # Jacobian of arm
@@ -619,6 +607,29 @@ for t in range(0, Desired_trajectory.shape[0]-1):
     # print(f"\nJ_base = {J_base}")
     Je = np.hstack((J_base, J_arm))
     # print(f"Je = {Je}")
+
+    # Milestone 3 - PID controller 
+    Ve, Xerr, Xerr_Total= FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr, Xerr_Total)
+    Xerr_Total += Xerr*dt
+
+    # print(f"Xerr = {Xerr}")
+
+
+
+    # Command velocities
+    u_theta_Dot = np.linalg.pinv(Je)@Ve
+    # print(f"\nu_theta_Dot = {u_theta_Dot}")
+    ControlVelocities = u_theta_Dot
+
+    # Milestone 1 - Get next state
+    CurrentState = NextState(CurrentState, ControlVelocities, dt, VelocityLimit)
+
+
+    # print(f"Next_X = {Next_X}")
+    stack = CurrentState
+    stack[-1] = Desired_trajectory[t][-1]
+    Xtotal = np.vstack((Xtotal, stack))
+
 
 
 
