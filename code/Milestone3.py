@@ -8,6 +8,7 @@ page 150 in mr book fro Part 1
 """
 import modern_robotics as mr
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 
@@ -175,6 +176,8 @@ def Milestone2():
     method = 5
     k = 1
     Tf_vec = np.array([2,1,1,1,3,1,1,1]) # Time for all trajectories
+    """ Occilation """
+    # Tf_vec = np.array([2,1,1,1,3,1,1,1])*3 # Time for all trajectories
     gripper_vec = np.array([0, 0, 1, 1, 1, 1, 0, 0]) # Gripper state for each trajectory
     traj_select_vec = np.array([1, 0, 0, 0, 1, 0, 0, 0]) # Select Cartesian or ScrewTrajectory
 
@@ -194,9 +197,13 @@ def Milestone2():
                         [ 0, 0, 1, 0.025],
                         [ 0, 0, 0,   1  ]])
     # Gripper initial, End effector initial configuration
+    # Tse_initial = np.array([[ 0, 0, 1,  0 ],
+    #                         [ 0, 1, 0,  0 ],
+    #                         [-1, 0, 0, 0.5],
+    #                         [ 0, 0, 0,  1 ]])
     Tse_initial = np.array([[ 0, 0, 1,  0 ],
                             [ 0, 1, 0,  0 ],
-                            [-1, 0, 0, 0.5],
+                            [-1, 0, 0, 0.25],
                             [ 0, 0, 0,  1 ]])
     # Tse_initial = X
 
@@ -423,7 +430,18 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr_Total, Xerr):
     # PID with feedforward control
     # Total integral error
     # Xerr_Total += Xerr
+
+    """ Different controllers """
+    # # Feedforward control and PI
     Ve = mr.Adjoint(mr.TransInv(X) @ Xd) @ Vd + Kp@Xerr + Ki@Xerr_Total
+    # # Feedforward control and P
+    # Ve = mr.Adjoint(mr.TransInv(X) @ Xd) @ Vd + Kp@Xerr
+    # # Feedforward control
+    # Ve = mr.Adjoint(mr.TransInv(X) @ Xd) @ Vd
+    # P control
+    # Ve = Kp@Xerr
+    # # PI control
+    # Ve = Kp@Xerr + Ki@Xerr_Total
 
 
 
@@ -461,15 +479,30 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr_Total, Xerr):
 # TODO change
 # curr_config = np.array([0, 0, 0, 0, 0, 0, 0, 0])
 # curr_config = np.array([0, 0, 0, 0, 0, 0, -1.578, 0])
-curr_config = np.array([0, 0, 0.5, 0, -0.2, -0.6, -1.578, 0])
+# curr_config = np.array([0, 0, 0.5, 0, -0.2, -0.6, -1.578, 0])
+""" BEST """
+# Start_state = np.array([0, 0, 0.5, 0, -0.2, -0.6, -1.578, 0, 0, 0, 0, 0, 0])
+# curr_config = np.array([0, 0, 0.5, 0, -0.2, -0.6, -1.578, 0])
+""" TEST """
+Start_state = np.array([0.6, 0, 0.5, 0, -0.2, -0.6, -1.578, 0, 0, 0, 0, 0, 0])
+curr_config = np.array([0.6, 0, 0.5, 0, -0.2, -0.6, -1.578, 0])
+""" Test Occilation """
+Start_state = np.array([0.3, 0, 0.2, 0, -0.2, -0.6, -1.578, 0, 0, 0, 0, 0, 0])
+curr_config = np.array([0.3, 0, 0.2, 0, -0.2, -0.6, -1.578, 0])
 # PID Gains
 # Kp = 5 # 1
-# Ki = 1  # 0 
-# Kp = 1
-# Ki = 0.001
+# Ki = 1  # 0
+# Kp = 20
+# Ki = 0
+""" VERY GOOD but misses at the end""" 
+Kp = 0.6
+Ki = 0.01 # Increase to 10 for occilation
 """ Best but has some error when drop cube """
-Kp = 1
-Ki = 0.01
+# Kp = 1
+# Ki = 0.01
+""" Overshoot """
+# Kp = 1
+# Ki = 5
 
 # Time step
 dt = 0.01
@@ -552,8 +585,8 @@ def TransMat(R):
                      [ 0  ,  0  ,   0 ,   1  ]])
 
 # Max velocity
-VelocityLimit = 10 # 100
-
+VelocityLimit = 20#*10 # 100
+# 
 # Gripper initial, End effector initial configuration
 Tse_initial = np.array([[ 0, 0, 1,  0 ],
                         [ 0, 1, 0,  0 ],
@@ -563,7 +596,8 @@ Tse_initial = np.array([[ 0, 0, 1,  0 ],
 # X = Tse_initial
 # Start_state = np.array([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]) # TODO delete/
 # Start_state = np.array([0, 0, 0.5, 0, 0, 0, -1.578, 0, 0, 0, 0, 0, 0])
-Start_state = np.array([0, 0, 0.5, 0, -0.2, -0.6, -1.578, 0, 0, 0, 0, 0, 0])
+""" BEST """
+# Start_state = np.array([0, 0, 0.5, 0, -0.2, -0.6, -1.578, 0, 0, 0, 0, 0, 0])
 # Start_state = np.array([0.6, -0.2, -0.2, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
 # Start_state = np.array([0.000000,  0.000000,  1.000000,  0.000000,  1.000000,  0.000000, -1.000000,  0.000000,  0.000000,  0.551800,  0.000000,  0.401200, 0])
 # Start_state = np.array([0.000000,  0.000000,  1.000000,  0.000000,  1.000000,  0.000000, -1.000000,  0.000000,  0.000000,  0.0,  0.000000,  0.0, 0])
@@ -643,8 +677,78 @@ Xerr = np.zeros((6))
 
 
 """ WITH COLLISION DETECTION - Gets stuck though """
+def testJointLimits(Je, Ve, CurrentState):
+    # arm1 = np.array([-1.2, 1.2])
+    # arm2 = np.array([-1.116,1.3])
+    # arm3 = np.array([-2.25, 2.14])
+    # arm4 = np.array([-1.7, 0.1])
+    # arm1 = np.array([-2.0, 2.0])
+    # arm2 = np.array([-0.1, -1.8])
+    # arm3 = np.array([-0.1, -2.1])
+    # arm4 = np.array([-0.1, -1.7])
+    # arm1 = np.array([-0.8, 0.8])
+    # arm1 = np.array([-0.8, 0.8])
+    # arm2 = np.array([-0.1, -1.1])
+    # arm3 = np.array([-0.1, -2.5])#-1.89
+    # arm4 = np.array([0.1, -1.8])#-1.5
+    """ Use this """
+    arm1 = np.array([-0.8, 0.8])
+    arm2 = np.array([-0.1, -1.8])
+    arm3 = np.array([-0.5, -1.8])#-1.89
+    arm4 = np.array([1.8, -1.8])#-1.5
+    # print(f"joint_angles = {joint_angles}")
+    collision = True
+    # while collision == True:
+    for i in range(2): # (5):
+        collision = False
+        # Command velocities
+        u_theta_Dot = np.linalg.pinv(Je)@Ve
+        print(f"\nu_theta_Dot = {u_theta_Dot}")
+        ControlVelocities = u_theta_Dot
+
+        # Milestone 1 - Get next state
+        Next_X = NextState(CurrentState, ControlVelocities, dt, VelocityLimit)
+        # print(f"Next_X = {Next_X}")
+        # Calculate new current state
+        curr_config = Next_X[:12]
+        # print(f"curr_config = {curr_config}")
+        # Extraxt joint angles
+        joint_angles = curr_config[3:8]
+
+        # print(f"joint_angles = {joint_angles}")
+        # print(f"Je = {Je[:,4:]}")
+
+        if joint_angles[0] > arm1[0] or joint_angles[0] < arm1[1]:
+            print(f"1")
+            collision = True
+            for j in range(5):
+                Je[j,4] = 0
+        if joint_angles[1] > arm2[0] or joint_angles[1] < arm2[1]:
+            print(f"2")
+            collision = True
+            for j in range(Je.shape[0]):
+                Je[j,5] = 0
+        if joint_angles[2] > arm3[0] or joint_angles[2] < arm3[1]:
+            print(f"3")
+            collision = True
+            for j in range(Je.shape[0]):
+                Je[j,6] = 0
+        if joint_angles[3] > arm4[0] or joint_angles[3] < arm4[1]:
+            print(f"4")
+            collision = True
+            for j in range(Je.shape[0]):
+                Je[j,7] = 0
+    
+    return Next_X, Je, ControlVelocities
 
 
+Flag = 0
+Xerr1 = []
+Xerr2 = []
+Xerr3 = []
+Xerr4 = []
+Xerr5 = []
+Xerr6 = []
 
 for t in range(0, Desired_trajectory.shape[0]-1):
     # Milestone2 - Calculate desired trajectory and next desired trajectory
@@ -696,69 +800,14 @@ for t in range(0, Desired_trajectory.shape[0]-1):
 
     # print(f"Xerr = {Xerr}")
 
-
+    Next_X, Je, ControlVelocities = testJointLimits(Je, Ve, CurrentState)
 
     # # Command velocities
     # u_theta_Dot = np.linalg.pinv(Je)@Ve
     # # print(f"\nu_theta_Dot = {u_theta_Dot}")
     # ControlVelocities = u_theta_Dot
 
-    # arm1 = np.array([-1.2, 1.2])
-    # arm2 = np.array([-1.116,1.3])
-    # arm3 = np.array([-2.25, 2.14])
-    # arm4 = np.array([-1.7, 0.1])
-    # arm1 = np.array([-2.0, 2.0])
-    # arm2 = np.array([-0.1, -1.8])
-    # arm3 = np.array([-0.1, -2.1])
-    # arm4 = np.array([-0.1, -1.7])
-    # arm1 = np.array([-0.8, 0.8])
-    arm1 = np.array([-0.8, 0.8])
-    arm2 = np.array([-0.1, -1.8])
-    arm3 = np.array([-0.5, -2.5])#-1.89
-    arm4 = np.array([1.8, -1.8])#-1.5
-    # print(f"joint_angles = {joint_angles}")
-    collision = True
-    # while collision == True:
-    for i in range(2): # (5):
-        collision = False
-        # Command velocities
-        u_theta_Dot = np.linalg.pinv(Je)@Ve
-        print(f"\nu_theta_Dot = {u_theta_Dot}")
-        ControlVelocities = u_theta_Dot
-
-        # Milestone 1 - Get next state
-        Next_X = NextState(CurrentState, ControlVelocities, dt, VelocityLimit)
-        # print(f"Next_X = {Next_X}")
-        # Calculate new current state
-        curr_config = Next_X[:12]
-        # print(f"curr_config = {curr_config}")
-        # Extraxt joint angles
-        joint_angles = curr_config[3:8]
-
-        # print(f"joint_angles = {joint_angles}")
-        # print(f"Je = {Je[:,4:]}")
-
-        if joint_angles[0] > arm1[0] or joint_angles[0] < arm1[1]:
-            print(f"1")
-            collision = True
-            for j in range(5):
-                Je[j,4] = 0
-        if joint_angles[1] > arm2[0] or joint_angles[1] < arm2[1]:
-            print(f"2")
-            collision = True
-            for j in range(Je.shape[0]):
-                Je[j,5] = 0
-        if joint_angles[2] > arm3[0] or joint_angles[2] < arm3[1]:
-            print(f"3")
-            collision = True
-            for j in range(Je.shape[0]):
-                Je[j,6] = 0
-        if joint_angles[3] > arm4[0] or joint_angles[3] < arm4[1]:
-            # print(f"4")
-            collision = True
-            for j in range(Je.shape[0]):
-                Je[j,7] = 0
-
+    
 
     # Milestone 1 - Get next state
     CurrentState = NextState(CurrentState, ControlVelocities, dt, VelocityLimit)
@@ -769,15 +818,63 @@ for t in range(0, Desired_trajectory.shape[0]-1):
     stack[-1] = Desired_trajectory[t][-1]
     Xtotal = np.vstack((Xtotal, stack))
 
+    if Flag == 0:
+        plot_Xerr = Xerr
+        Flag = 1
+    else:
+        plot_Xerr = np.vstack((plot_Xerr, Xerr))
 
+    Xerr1.append(Xerr[0])
+    Xerr2.append(Xerr[1])
+    Xerr3.append(Xerr[2])
+    Xerr4.append(Xerr[3])
+    Xerr5.append(Xerr[4])
+    Xerr6.append(Xerr[5])
+
+
+fig, axis = plt.subplots(2,3)
+axis[0,0].plot(Xerr1)
+axis[0,0].set_title("Pitch Error")
+axis[0,0].set(ylabel = 'Error [rad]')
+axis[0,1].plot(Xerr2)
+axis[0,1].set_title("Yaw Error")
+axis[0,1].set(ylabel = 'Error [rad]')
+axis[0,2].plot(Xerr3)
+axis[0,2].set_title("Roll Error")
+axis[0,2].set(ylabel = 'Error [rad]')
+axis[1,0].plot(Xerr4)
+axis[1,0].set_title("X Error")
+axis[1,0].set(ylabel = 'Error [m]')
+axis[1,1].plot(Xerr5)
+axis[1,1].set_title("Y Error")
+axis[1,1].set(ylabel = 'Error [m]')
+axis[1,2].plot(Xerr6)
+axis[1,2].set_title("Z Error")
+axis[1,2].set(ylabel = 'Error [m]')
+for k in axis.flat:
+    k.set(xlabel='Time [ms]')
+fig.tight_layout()
+# plt.plot( Xerr1)
+# plt.plot( Xerr2)
+# plt.plot( Xerr3)
+# plt.plot( Xerr4)
+# plt.plot( Xerr5)
+# plt.plot( Xerr6)
+plt.show()
 
 
 # Create csv file
 np.savetxt("Capstone.csv", Xtotal, delimiter = ",")
 
-    # print(f"Xd = {Xd}")
-    # print(f"[u_theta_Dot] = {u_theta_Dot}")
+from matplotlib.collections import LineCollection
 
 
+# # set the limits
+# ax.set_xlim([0, 100])
+# ax.set_ylim([0, 100])
 
+# ax.set_title('Rapid Exploring Random Tree')
+
+# # display the plot
+# plt.show()
 
