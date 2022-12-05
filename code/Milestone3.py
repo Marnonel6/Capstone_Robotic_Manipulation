@@ -459,11 +459,11 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr_Total, Xerr):
 
 
 # TODO change
-curr_config = np.array([0, 0, 0, 0, 0, 0, 0, 0])
-
+# curr_config = np.array([0, 0, 0, 0, 0, 0, 0, 0])
+curr_config = np.array([0, 0, 0, 0, 0, 0, -1.578, 0])
 # PID Gains
-Kp = 10 # 1
-Ki = 0  # 0 
+Kp = 5 # 1
+Ki = 1  # 0 
 
 # Time step
 dt = 0.01
@@ -556,8 +556,10 @@ Tse_initial = np.array([[ 0, 0, 1,  0 ],
 # print(f"X = {X}")
 # X = Tse_initial
 # Start_state = np.array([0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]) # TODO delete/
-Start_state = np.array([0.6, -0.2, -0.2, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
-Start_state = np.array([0.6, -0.2, -0.2, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
+Start_state = np.array([0, 0, 0.5, 0, 0, 0, -1.578, 0, 0, 0, 0, 0, 0])
+# Start_state = np.array([0.6, -0.2, -0.2, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
+# Start_state = np.array([0.000000,  0.000000,  1.000000,  0.000000,  1.000000,  0.000000, -1.000000,  0.000000,  0.000000,  0.551800,  0.000000,  0.401200, 0])
+# Start_state = np.array([0.000000,  0.000000,  1.000000,  0.000000,  1.000000,  0.000000, -1.000000,  0.000000,  0.000000,  0.0,  0.000000,  0.0, 0])
 CurrentState = Start_state
 Xtotal = Start_state
 
@@ -635,73 +637,20 @@ for t in range(0, Desired_trajectory.shape[0]-1):
 
 """ WITH COLLISION DETECTION - Gets stuck though """
 
+
+
 # for t in range(0, Desired_trajectory.shape[0]-1):
 #     # Milestone2 - Calculate desired trajectory and next desired trajectory
 #     Xd = TransMat(Desired_trajectory[t])
 #     Xd_next = TransMat(Desired_trajectory[t+1])
 
-#     # Milestone 3 - PID controller 
-#     Ve, Xerr, Xerr_Total= FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr, Xerr_Total)
-#     Xerr_Total += Xerr*dt
 
-#     arm1 = np.array([-1.2, 1.2])
-#     arm2 = np.array([-1.116,0.3])
-#     arm3 = np.array([-1.9, 0.5])
-#     arm4 = np.array([-1.7, 0.1])
-#     print(f"joint_angles = {joint_angles}")
-#     collision = True
-#     while collision == True:
-#         collision = False
-#         # Command velocities
-#         u_theta_Dot = np.linalg.pinv(Je)@Ve
-#         # print(f"\nu_theta_Dot = {u_theta_Dot}")
-#         ControlVelocities = u_theta_Dot
-
-#         # Milestone 1 - Get next state
-#         Next_X = NextState(CurrentState, ControlVelocities, dt, VelocityLimit)
-#         # print(f"Next_X = {Next_X}")
-#         # Calculate new current state
-#         curr_config = Next_X[:12]
-#         # print(f"curr_config = {curr_config}")
-#         # Extraxt joint angles
-#         joint_angles = curr_config[3:8]
-
-#         # print(f"joint_angles = {joint_angles}")
-#         # print(f"Je = {Je[:,4:]}")
-
-#         if joint_angles[0] < arm1[0] or joint_angles[0] > arm1[1]:
-#             # print(f"1")
-#             collision = True
-#             for j in range(5):
-#                 Je[j,4] = 0
-#         if joint_angles[1] < arm2[0] or joint_angles[1] > arm2[1]:
-#             # print(f"2")
-#             collision = True
-#             for j in range(5):
-#                 Je[j,5] = 0
-#         if joint_angles[2] < arm3[0] or joint_angles[2] > arm3[1]:
-#             # print(f"3")
-#             collision = True
-#             for j in range(5):
-#                 Je[j,6] = 0
-#         if joint_angles[3] < arm4[0] or joint_angles[3] > arm4[1]:
-#             # print(f"4")
-#             collision = True
-#             for j in range(5):
-#                 Je[j,7] = 0
-
-#     print(" No collision ")
-#         # def testJointLimits(joint):
-#         #     if joint[0] > arm1[1]:
-#         #         joint
-        
-
-#         #     return 
-
-
-#     # """ Test Joint Limits """
-#     # testJointLimits(joint_angles)
-
+#     # print(f"Next_X = {Next_X}")
+#     # Calculate new current state
+#     curr_config = CurrentState[:12]
+#     # print(f"curr_config = {curr_config}")
+#     # Extraxt joint angles
+#     joint_angles = curr_config[3:8]
 
 #     # print(f"joint_angles = {joint_angles}")
 #     # Calculate transformation matrix of end-effector {e} relative to the base of the arm {0}
@@ -721,11 +670,9 @@ for t in range(0, Desired_trajectory.shape[0]-1):
 
 #     # Tse - Current configuration of robot end-effector {e} relative to world frame {s}
 #     X = Tsb @ Tb0 @ T0e
-#     CurrentState = Next_X
-#     # print(f"Next_X = {Next_X}")
-#     stack = Next_X
-#     stack[-1] = Desired_trajectory[t][-1]
-#     Xtotal = np.vstack((Xtotal, stack))
+#     # X = mr.FKinBody(X,Blist,joint_angles)
+#     # CurrentState = Next_X
+
 
 
 #     # Jacobian of arm
@@ -735,6 +682,77 @@ for t in range(0, Desired_trajectory.shape[0]-1):
 #     # print(f"\nJ_base = {J_base}")
 #     Je = np.hstack((J_base, J_arm))
 #     # print(f"Je = {Je}")
+
+#     # Milestone 3 - PID controller 
+#     Ve, Xerr, Xerr_Total= FeedbackControl(X, Xd, Xd_next, Kp, Ki, dt, Xerr, Xerr_Total)
+#     Xerr_Total += Xerr*dt
+
+#     # print(f"Xerr = {Xerr}")
+
+
+
+#     # # Command velocities
+#     # u_theta_Dot = np.linalg.pinv(Je)@Ve
+#     # # print(f"\nu_theta_Dot = {u_theta_Dot}")
+#     # ControlVelocities = u_theta_Dot
+
+#     arm1 = np.array([-1.2, 1.2])
+#     arm2 = np.array([-1.116,1.3])
+#     arm3 = np.array([-2.25, 2.14])
+#     arm4 = np.array([-1.7, 0.1])
+#     # print(f"joint_angles = {joint_angles}")
+#     collision = True
+#     while collision == True:
+#         collision = False
+#         # Command velocities
+#         u_theta_Dot = np.linalg.pinv(Je)@Ve
+#         print(f"\nu_theta_Dot = {u_theta_Dot}")
+#         ControlVelocities = u_theta_Dot
+
+#         # Milestone 1 - Get next state
+#         Next_X = NextState(CurrentState, ControlVelocities, dt, VelocityLimit)
+#         # print(f"Next_X = {Next_X}")
+#         # Calculate new current state
+#         curr_config = Next_X[:12]
+#         # print(f"curr_config = {curr_config}")
+#         # Extraxt joint angles
+#         joint_angles = curr_config[3:8]
+
+#         # print(f"joint_angles = {joint_angles}")
+#         # print(f"Je = {Je[:,4:]}")
+
+#         if joint_angles[0] < arm1[0] or joint_angles[0] > arm1[1]:
+#             print(f"1")
+#             collision = True
+#             for j in range(5):
+#                 Je[j,4] = 0
+#         if joint_angles[1] < arm2[0] or joint_angles[1] > arm2[1]:
+#             print(f"2")
+#             collision = True
+#             for j in range(5):
+#                 Je[j,5] = 0
+#         if joint_angles[2] < arm3[0] or joint_angles[2] > arm3[1]:
+#             print(f"3")
+#             collision = True
+#             for j in range(5):
+#                 Je[j,6] = 0
+#         if joint_angles[3] < arm4[0] or joint_angles[3] > arm4[1]:
+#             # print(f"4")
+#             collision = True
+#             for j in range(5):
+#                 Je[j,7] = 0
+
+
+#     # Milestone 1 - Get next state
+#     CurrentState = NextState(CurrentState, ControlVelocities, dt, VelocityLimit)
+
+
+#     # print(f"Next_X = {Next_X}")
+#     stack = CurrentState
+#     stack[-1] = Desired_trajectory[t][-1]
+#     Xtotal = np.vstack((Xtotal, stack))
+
+
 
 
 # Create csv file
