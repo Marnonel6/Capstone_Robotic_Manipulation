@@ -121,7 +121,9 @@ def Milestone2():
                         [-1, 0, 0,  -1  ],
                         [ 0, 0, 1, 0.025],
                         [ 0, 0, 0,   1  ]])
-    """ New Block configuration """
+    """ 
+    New Block configuration 
+    """
     # # Cube initial configuration
     Tsc_initial = np.array([[1, 0, 0,   1  ],
                             [0, 1, 0,   1  ],

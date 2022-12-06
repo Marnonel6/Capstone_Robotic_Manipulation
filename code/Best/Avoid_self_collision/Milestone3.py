@@ -489,7 +489,7 @@ Xerr5 = []
 Xerr6 = []
 
 
-""" WITH COLLISION DETECTION - Gets stuck though """
+""" WITH COLLISION DETECTION """
 def testJointLimits(Je, Ve, CurrentState):
     """ Use this """
     arm1 = np.array([-0.8, 0.8])
