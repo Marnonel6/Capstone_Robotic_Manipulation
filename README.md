@@ -1,6 +1,7 @@
 ## Capstone_Robotic_Manipulation
 
 # Best simulation
+[Media_Screencast from 12-05-2022 09 57 33 AM.webm](https://github.com/Marnonel6/Capstone_Robotic_Manipulation/assets/60977336/9b2acf17-4e97-454c-ad4c-a7a40e56895d)
 
 # Description:
 This README is for both best simulation folders namely Avoid_self_collision and 
